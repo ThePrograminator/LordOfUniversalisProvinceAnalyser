@@ -29,6 +29,7 @@ public class Calculator implements Runnable
         this.finderList.add(new SuperRegionFinder());
         this.finderList.add(new ContinentFinder());
         this.finderList.add(new TradeNodeFinder());
+        this.finderList.add(new ClimateFinder());
 
         this.logHandler = new LogHandler(main);
     }
@@ -41,7 +42,7 @@ public class Calculator implements Runnable
             this.currentFinder = finder.getFinderName();
             getLogHandler().updateLogTextArea("|Processing| Message => Currently Loading: " + currentFinder);
             try {
-                finder.loadFiles(fileHandler.getDirectoryPath());
+                finder.loadFiles(fileHandler.getInformationDirectoryPath());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

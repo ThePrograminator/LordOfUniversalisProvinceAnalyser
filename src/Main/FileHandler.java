@@ -22,6 +22,7 @@ public class FileHandler
         addDependentFile("superregion.txt");
         addDependentFile("continent.txt");
         addDependentFile("00_tradenodes.txt");
+        addDependentFile("climate.txt");
     }
 
     public boolean searchForAppropriatedFiles(String chosenDirectory)

@@ -35,7 +35,7 @@ public class Main extends Application
 
         startButton.setOnAction(event ->
         {
-            if (calculator.getFileHandler().getDirectoryPath() == null)
+            if (calculator.getFileHandler().getInformationDirectoryPath() == null)
             {
                 this.calculator.getLogHandler().updateLogTextArea("|Configuration| Message => No Directory Path has been chosen");
                 return;
@@ -57,7 +57,7 @@ public class Main extends Application
         if (true)
         {
             directoryInformationLabel.setText("C:\\Users\\Christian\\Desktop\\LordOfUniversalisProvince\\InformationMap");
-            calculator.getFileHandler().setDirectoryPath("C:\\Users\\Christian\\Desktop\\LordOfUniversalisProvince\\InformationMap");
+            calculator.getFileHandler().setInformationDirectoryPath("C:\\Users\\Christian\\Desktop\\LordOfUniversalisProvince\\InformationMap");
         }
 
         //Input
@@ -85,7 +85,7 @@ public class Main extends Application
             }
 
             directoryInputLabel.setText(selectedDirectory.getAbsolutePath());
-            calculator.getFileHandler().setDirectoryPath(selectedDirectory.getAbsolutePath());
+            calculator.getFileHandler().setInputDirectoryPath(selectedDirectory.getAbsolutePath());
         });
 
         HBox chooseDirectoryInputHbox = new HBox();
@@ -117,7 +117,7 @@ public class Main extends Application
             }
 
             directoryOutputLabel.setText(selectedDirectory.getAbsolutePath());
-            calculator.getFileHandler().setDirectoryPath(selectedDirectory.getAbsolutePath());
+            calculator.getFileHandler().setOutputDirectoryPath(selectedDirectory.getAbsolutePath());
         });
 
         HBox chooseDirectoryOutputHbox = new HBox();
@@ -149,7 +149,7 @@ public class Main extends Application
             }
 
             directoryInformationLabel.setText(selectedDirectory.getAbsolutePath());
-            calculator.getFileHandler().setDirectoryPath(selectedDirectory.getAbsolutePath());
+            calculator.getFileHandler().setInformationDirectoryPath(selectedDirectory.getAbsolutePath());
         });
 
         HBox chooseDirectoryInformationHbox = new HBox();
