@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -23,13 +24,79 @@ public class Main extends Application
     private ProgressBar pb = new ProgressBar(progressValue);
     private ProgressIndicator pi = new ProgressIndicator(progressValue);
     private TextArea logTextArea;
+    private BorderPane root;
+    private Scene scene;
+    private VBox analyzeCenter;
 
     private Calculator calculator = new Calculator(this);
 
     @Override
-    public void start(Stage primaryStage) throws Exception
+    public void start(Stage primaryStage)
     {
-        VBox vBox = new VBox();
+        root = new BorderPane();
+
+        primaryStage.setMinWidth(750);
+        primaryStage.setMinHeight(750);
+        primaryStage.setMaxWidth(750);
+        primaryStage.setMaxHeight(750);
+
+        if (true)
+        {
+            directoryInformationLabel.setText("C:\\Users\\Christian\\Desktop\\LordOfUniversalisProvince\\InformationMap");
+            calculator.getFileHandler().setInformationDirectoryPath("C:\\Users\\Christian\\Desktop\\LordOfUniversalisProvince\\InformationMap");
+        }
+
+        createBottomLayout(primaryStage);
+        createTopLayout(primaryStage);
+        createCenterLayout(primaryStage);
+
+        scene = new Scene(root, 750, 750);
+
+        primaryStage.setTitle("Lord of Universalis - Create Province Information");
+        primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(e -> Platform.exit());
+        primaryStage.show();
+    }
+
+    public void createTopLayout(Stage primaryStage)
+    {
+        MenuBar menuBar = new MenuBar();
+        menuBar.prefWidthProperty().bind(primaryStage.widthProperty());
+
+        // --- Menu File
+        Menu menuFile = new Menu("File");
+        MenuItem province = new MenuItem("Province");
+        province.setOnAction(event ->
+        {
+            System.out.println("hello world");
+            Label label = new Label("Hello World");
+            VBox vBox = new VBox();
+            vBox.getChildren().addAll(label);
+            root.setCenter(vBox);
+        });
+        menuFile.getItems().add(province);
+
+        // --- Menu Edit
+        Menu menuEdit = new Menu("Analyze");
+        MenuItem analyze = new MenuItem("Analyze");
+        analyze.setOnAction(event ->
+        {
+            System.out.println("hello world");
+            root.setCenter(analyzeCenter);
+        });
+        menuEdit.getItems().add(analyze);
+
+        // --- Menu View
+        Menu menuView = new Menu("Configuration");
+
+        menuBar.getMenus().addAll(menuFile, menuEdit, menuView);
+
+        root.setTop(menuBar);
+    }
+
+    public void createCenterLayout(Stage primaryStage)
+    {
+        analyzeCenter = new VBox();
 
         Button startButton = new Button("Start");
 
@@ -53,12 +120,6 @@ public class Main extends Application
         Label loadingText = new Label("Loading: ");
 
         loadingBarHbox.getChildren().addAll(loadingText, pb, pi);
-
-        if (true)
-        {
-            directoryInformationLabel.setText("C:\\Users\\Christian\\Desktop\\LordOfUniversalisProvince\\InformationMap");
-            calculator.getFileHandler().setInformationDirectoryPath("C:\\Users\\Christian\\Desktop\\LordOfUniversalisProvince\\InformationMap");
-        }
 
         //Input
         DirectoryChooser directoryInputChooser = new DirectoryChooser();
@@ -156,19 +217,21 @@ public class Main extends Application
 
         chooseDirectoryInformationHbox.getChildren().addAll(chooseDirectoryInformationButton, directoryInformationLabel);
 
+        analyzeCenter.getChildren().addAll(startButton,chooseDirectoryInputHbox, chooseDirectoryOutputHbox, chooseDirectoryInformationHbox, finderLoadingLabel, loadingBarHbox);
+        analyzeCenter.setSpacing(25);
+        root.setCenter(analyzeCenter);
+    }
+
+    public void createBottomLayout(Stage primaryStage)
+    {
         logTextArea = new TextArea();
         logTextArea.setEditable(false);
-        logTextArea.setMaxWidth(500);
-        logTextArea.setMaxHeight(500);
+        logTextArea.setMaxWidth(primaryStage.getMinWidth());
+        logTextArea.setMaxHeight(1000);
 
-        vBox.getChildren().addAll(startButton,chooseDirectoryInputHbox, chooseDirectoryOutputHbox, chooseDirectoryInformationHbox, finderLoadingLabel, loadingBarHbox, logTextArea);
-        vBox.setSpacing(25);
-
-        primaryStage.setTitle("Lord of Universalis - Create Province Information");
-        primaryStage.setScene(new Scene(vBox, 500, 500));
-        primaryStage.setOnCloseRequest(e -> Platform.exit());
-        primaryStage.show();
+        root.setBottom(logTextArea);
     }
+
 
     public static void main(String[] args)
     {

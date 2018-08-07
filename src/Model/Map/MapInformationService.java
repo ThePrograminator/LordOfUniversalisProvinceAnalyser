@@ -3,6 +3,7 @@ package Model.Map;
 import Model.RGB;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 public class MapInformationService {
     private static MapInformationService instance = new MapInformationService();
@@ -18,6 +19,7 @@ public class MapInformationService {
     private ArrayList<Continent> continentList;
     private ArrayList<Climate> climateList;
     private ArrayList<TradeNode> tradeNodeList;
+    private ArrayList<Water> waterProvinceList;
 
     private MapInformationService()
     {
@@ -28,6 +30,7 @@ public class MapInformationService {
         continentList = new ArrayList<>();
         climateList = new ArrayList<>();
         tradeNodeList = new ArrayList<>();
+        waterProvinceList = new ArrayList<>();
     }
 
     public ArrayList<RGB> getRgbList() {
@@ -84,5 +87,13 @@ public class MapInformationService {
 
     public void setTradeNodeList(ArrayList<TradeNode> tradeNodeList) {
         this.tradeNodeList = tradeNodeList;
+    }
+
+    public ArrayList<Water> getWaterProvinceList() {
+        return waterProvinceList;
+    }
+
+    public void setWaterProvinceList(ArrayList<Water> waterProvinceList) {
+        this.waterProvinceList = waterProvinceList;
     }
 }

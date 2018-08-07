@@ -3,6 +3,9 @@ package SearchObjects;
 import Main.Main;
 import javafx.application.Platform;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class LoadingBarObserver extends Observer
 {
     public LoadingBarObserver(Calculator calculator){
@@ -37,6 +40,8 @@ public class LoadingBarObserver extends Observer
         instance.getPb().setProgress(progressValue);
         instance.getPi().setProgress(progressValue);
 
-        this.calculator.getLogHandler().updateLogTextArea("|Processing| Message => Subprocess done: " + calculator.getCurrentFinder() + ", the total progress done: " + (progressValue * 100.0));
+        String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
+
+        this.calculator.getLogHandler().updateLogTextArea("|Processing| Message => Subprocess done: " + calculator.getCurrentFinder() + ", the total progress done: " + (progressValue * 100.0) + " , Time Finished: " + timeStamp );
     }
 }

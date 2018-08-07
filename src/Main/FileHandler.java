@@ -23,6 +23,7 @@ public class FileHandler
         addDependentFile("continent.txt");
         addDependentFile("00_tradenodes.txt");
         addDependentFile("climate.txt");
+        addDependentFile("default.map");
     }
 
     public boolean searchForAppropriatedFiles(String chosenDirectory)

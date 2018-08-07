@@ -2,6 +2,7 @@ package SearchObjects;
 
 import Main.Main;
 import javafx.application.Platform;
+import javafx.scene.control.TextArea;
 
 public class LogHandler
 {
@@ -13,6 +14,12 @@ public class LogHandler
 
     public synchronized void updateLogTextArea(String message)
     {
-        Platform.runLater(() -> main.getLogTextArea().setText(main.getLogTextArea().getText() + message + "\n"));
+        Platform.runLater(() ->
+        {
+            TextArea textArea =  main.getLogTextArea();
+            textArea.setText(textArea.getText() + message + "\n");
+            textArea.selectPositionCaret( textArea.getLength());
+            textArea.deselect();
+        });
     }
 }

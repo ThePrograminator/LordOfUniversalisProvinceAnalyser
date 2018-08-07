@@ -30,6 +30,7 @@ public class Calculator implements Runnable
         this.finderList.add(new ContinentFinder());
         this.finderList.add(new TradeNodeFinder());
         this.finderList.add(new ClimateFinder());
+        this.finderList.add(new WaterFinder());
 
         this.logHandler = new LogHandler(main);
     }
