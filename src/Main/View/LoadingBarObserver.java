@@ -1,6 +1,7 @@
-package SearchObjects;
+package Main.View;
 
 import Main.Main;
+import SearchObjects.FinderHandler;
 import javafx.application.Platform;
 
 import java.text.SimpleDateFormat;
@@ -8,9 +9,9 @@ import java.util.Date;
 
 public class LoadingBarObserver extends Observer
 {
-    public LoadingBarObserver(Calculator calculator){
-        this.calculator = calculator;
-        this.calculator.attach(this);
+    public LoadingBarObserver(FinderHandler finderHandler){
+        this.finderHandler = finderHandler;
+        this.finderHandler.attach(this);
     }
     @Override
     public void update() {
@@ -19,12 +20,12 @@ public class LoadingBarObserver extends Observer
 
     public synchronized void updateLoadingBar()
     {
-        Main instance = this.calculator.getMain();
+        Main instance = this.finderHandler.getMain();
 
         double progressValue = 0;
-        if (this.calculator.getFindersDone() != this.calculator.getFinderList().size())
+        if (this.finderHandler.getFindersDone() != this.finderHandler.getFinderList().size())
         {
-            double percentageValue = this.calculator.getFindersDone()/ this.calculator.getFinderList().size();
+            double percentageValue = this.finderHandler.getFindersDone()/ this.finderHandler.getFinderList().size();
             //progressValue = instance.getProgressValue() + percentageValue;
             progressValue = percentageValue;
         }
@@ -35,13 +36,13 @@ public class LoadingBarObserver extends Observer
 
         instance.setProgressValue(progressValue);
 
-        Platform.runLater(() -> instance.getFinderLoadingLabel().setText(calculator.getCurrentFinder()));
+        Platform.runLater(() -> instance.getFinderLoadingLabel().setText(finderHandler.getCurrentFinder()));
 
         instance.getPb().setProgress(progressValue);
         instance.getPi().setProgress(progressValue);
 
         String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
-        this.calculator.getLogHandler().updateLogTextArea("|Processing| Message => Subprocess done: " + calculator.getCurrentFinder() + ", the total progress done: " + (progressValue * 100.0) + " , Time Finished: " + timeStamp );
+        instance.getLogHandler().updateLogTextArea(LogType.ANALYSING,"Subprocess done: " + finderHandler.getCurrentFinder() + ", the total progress done: " + (progressValue * 100.0) + " , Time Finished: " + timeStamp );
     }
 }

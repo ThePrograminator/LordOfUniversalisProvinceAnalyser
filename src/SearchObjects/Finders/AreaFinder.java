@@ -2,12 +2,10 @@ package SearchObjects.Finders;
 
 import Model.Map.Area;
 import Model.Map.MapInformationService;
-import Model.RGB;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -38,19 +36,13 @@ public class AreaFinder implements Finder
                 String line = scanner.nextLine();
 
                 if (line.isEmpty())
-                {
                     continue;
-                }
 
                 if (line.charAt(0) == '#')
-                {
                     continue;
-                }
 
                 if (line.charAt(0) == '}')
-                {
                     continue;
-                }
 
                 if (line.contains(" = {"))
                 {

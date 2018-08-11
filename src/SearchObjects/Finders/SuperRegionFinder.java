@@ -1,6 +1,5 @@
 package SearchObjects.Finders;
 
-import Model.Map.Area;
 import Model.Map.MapInformationService;
 import Model.Map.Region;
 import Model.Map.SuperRegion;

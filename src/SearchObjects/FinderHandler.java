@@ -2,12 +2,15 @@ package SearchObjects;
 
 import Main.Main;
 import Main.FileHandler;
+import Main.View.LogHandler;
+import Main.View.LogType;
+import Main.View.Observer;
 import SearchObjects.Finders.*;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-public class Calculator implements Runnable
+public class FinderHandler implements Runnable
 {
     private Main main;
     private ArrayList<Finder> finderList = new ArrayList<>();
@@ -16,13 +19,11 @@ public class Calculator implements Runnable
     private String currentFinder;
     private float findersDone = 0;
 
-    private FileHandler fileHandler;
-    private LogHandler logHandler;
+    private ProvinceFinder provinceFinder;
 
-    public Calculator(Main main)
+    public FinderHandler(Main main)
     {
         this.main = main;
-        this.fileHandler = new FileHandler();
         this.finderList.add(new RGBFinder());
         this.finderList.add(new AreaFinder());
         this.finderList.add(new RegionFinder());
@@ -31,27 +32,27 @@ public class Calculator implements Runnable
         this.finderList.add(new TradeNodeFinder());
         this.finderList.add(new ClimateFinder());
         this.finderList.add(new WaterFinder());
-
-        this.logHandler = new LogHandler(main);
+        this.finderList.add(new BuildingFinder());
+        this.finderList.add(new LocalisationFinder());
     }
 
     public void startCalculator()
     {
-        getLogHandler().updateLogTextArea("|Processing| Message => Processing Started");
+        main.getLogHandler().updateLogTextArea(LogType.ANALYSING,"Analysing Started");
         for (Finder finder : finderList)
         {
             this.currentFinder = finder.getFinderName();
-            getLogHandler().updateLogTextArea("|Processing| Message => Currently Loading: " + currentFinder);
+            main.getLogHandler().updateLogTextArea(LogType.ANALYSING,"Currently Analysing: " + currentFinder);
             try {
-                finder.loadFiles(fileHandler.getInformationDirectoryPath());
+                finder.loadFiles(main.getFileHandler().getInformationDirectoryPath());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
             findersDone++;
             notifyAllObservers();
         }
-        getLogHandler().updateLogTextArea("|Processing| Message => Processing Finished");
-
+        main.getLogHandler().updateLogTextArea(LogType.ANALYSING,"Analysing Finished");
+        main.setFilesLoaded(true);
     }
 
     public void attach(Observer observer){
@@ -88,17 +89,11 @@ public class Calculator implements Runnable
         return finderList;
     }
 
-    public FileHandler getFileHandler() {
-        return fileHandler;
-    }
-
-    public LogHandler getLogHandler() {
-        return logHandler;
-    }
-
     @Override
     public void run()
     {
+        this.provinceFinder = new ProvinceFinder(main.getFileHandler().getInputDirectoryPath());
+        this.finderList.add(provinceFinder);
         startCalculator();
     }
 }

@@ -7,13 +7,14 @@ import java.util.TreeMap;
 
 public class FileHandler
 {
+    private Main main;
     private String inputDirectoryPath;
     private String outputDirectoryPath;
-    private String InformationDirectoryPath;
+    private String informationDirectoryPath;
     private ArrayList<String> fileNamesList;
     private TreeMap<String, Boolean> fileNamesTreemap = new TreeMap<>();
 
-    public FileHandler()
+    public FileHandler(Main main)
     {
         this.fileNamesList = new ArrayList<>();
         addDependentFile("definition.csv");
@@ -24,6 +25,7 @@ public class FileHandler
         addDependentFile("00_tradenodes.txt");
         addDependentFile("climate.txt");
         addDependentFile("default.map");
+        addDependentFile("prov_names");
     }
 
     public boolean searchForAppropriatedFiles(String chosenDirectory)
@@ -38,6 +40,8 @@ public class FileHandler
                 String key = entry.getKey();
 
                 if(file.getName().equals(key))
+                    entry.setValue(true);
+                else if (key.contains("prov_names"))
                     entry.setValue(true);
             }
         }
@@ -82,11 +86,11 @@ public class FileHandler
     }
 
     public String getInformationDirectoryPath() {
-        return InformationDirectoryPath;
+        return informationDirectoryPath;
     }
 
     public void setInformationDirectoryPath(String informationDirectoryPath) {
-        InformationDirectoryPath = informationDirectoryPath;
+        this.informationDirectoryPath = informationDirectoryPath;
     }
 
     public void addDependentFile(String fileName)

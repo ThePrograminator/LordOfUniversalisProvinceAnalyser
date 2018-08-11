@@ -1,17 +1,10 @@
-package Model;
+package Model.ProvinceInformation;
 
 public class Development
 {
     private int baseTax;
     private int baseProduction;
     private int baseManpower;
-    private String tradeGoods;
-
-    public Development(int baseTax, int baseProduction, int baseManpower) {
-        this.baseTax = baseTax;
-        this.baseProduction = baseProduction;
-        this.baseManpower = baseManpower;
-    }
 
     public int getBaseTax() {
         return baseTax;
@@ -37,11 +30,14 @@ public class Development
         this.baseManpower = baseManpower;
     }
 
-    public String getTradeGoods() {
-        return tradeGoods;
-    }
+    @Override
+    public String toString()
+    {
+        String toString;
+        toString = "base_tax = " +  baseTax + "\n";
+        toString += "base_production = " +  baseProduction + "\n";
+        toString += "base_manpower = " +  baseManpower + "\n" + "\n";
 
-    public void setTradeGoods(String tradeGoods) {
-        this.tradeGoods = tradeGoods;
+        return  toString;
     }
 }

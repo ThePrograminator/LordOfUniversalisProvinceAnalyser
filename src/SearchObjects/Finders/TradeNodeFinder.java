@@ -1,6 +1,5 @@
 package SearchObjects.Finders;
 
-import Model.Map.Continent;
 import Model.Map.MapInformationService;
 import Model.Map.TradeNode;
 

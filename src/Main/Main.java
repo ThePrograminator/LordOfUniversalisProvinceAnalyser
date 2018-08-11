@@ -1,7 +1,12 @@
 package Main;
 
-import SearchObjects.Calculator;
-import SearchObjects.LoadingBarObserver;
+import Main.View.LogHandler;
+import Main.View.LogType;
+import Main.View.Observer;
+import Model.Map.MapInformationService;
+import SearchObjects.FinderHandler;
+import Main.View.LoadingBarObserver;
+import SearchObjects.ProvincePrinter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -27,8 +32,13 @@ public class Main extends Application
     private BorderPane root;
     private Scene scene;
     private VBox analyzeCenter;
+    private boolean filesLoaded;
 
-    private Calculator calculator = new Calculator(this);
+    private FileHandler fileHandler = new FileHandler(this);
+    private FinderHandler finderHandler = new FinderHandler(this);
+    private ProvincePrinter provincePrinter = new ProvincePrinter(this);
+    private LogHandler logHandler = new LogHandler(this);
+
 
     @Override
     public void start(Stage primaryStage)
@@ -40,19 +50,13 @@ public class Main extends Application
         primaryStage.setMaxWidth(750);
         primaryStage.setMaxHeight(750);
 
-        if (true)
-        {
-            directoryInformationLabel.setText("C:\\Users\\Christian\\Desktop\\LordOfUniversalisProvince\\InformationMap");
-            calculator.getFileHandler().setInformationDirectoryPath("C:\\Users\\Christian\\Desktop\\LordOfUniversalisProvince\\InformationMap");
-        }
-
         createBottomLayout(primaryStage);
         createTopLayout(primaryStage);
         createCenterLayout(primaryStage);
 
         scene = new Scene(root, 750, 750);
 
-        primaryStage.setTitle("Lord of Universalis - Create Province Information");
+        primaryStage.setTitle("Lord of Universalis - Create ProvinceInformation Information");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(e -> Platform.exit());
         primaryStage.show();
@@ -65,10 +69,9 @@ public class Main extends Application
 
         // --- Menu File
         Menu menuFile = new Menu("File");
-        MenuItem province = new MenuItem("Province");
+        MenuItem province = new MenuItem("ProvinceInformation");
         province.setOnAction(event ->
         {
-            System.out.println("hello world");
             Label label = new Label("Hello World");
             VBox vBox = new VBox();
             vBox.getChildren().addAll(label);
@@ -102,18 +105,46 @@ public class Main extends Application
 
         startButton.setOnAction(event ->
         {
-            if (calculator.getFileHandler().getInformationDirectoryPath() == null)
+            if(filesLoaded)
+                return;
+
+            if (fileHandler.getInputDirectoryPath() == null)
             {
-                this.calculator.getLogHandler().updateLogTextArea("|Configuration| Message => No Directory Path has been chosen");
+                this.logHandler.updateLogTextArea(LogType.ERROR,"No Input Directory Path has been chosen");
                 return;
             }
-            this.calculator.getLogHandler().updateLogTextArea("|Configuration| Message => Valid Directory chosen");
+            else if (fileHandler.getOutputDirectoryPath() == null)
+            {
+                this.logHandler.updateLogTextArea(LogType.ERROR,"No Output Directory Path has been chosen");
+                return;
+            }
+            else if (fileHandler.getInformationDirectoryPath() == null)
+            {
+                this.logHandler.updateLogTextArea(LogType.ERROR,"No Information Directory Path has been chosen");
+                return;
+            }
 
-            new LoadingBarObserver(calculator);
+            this.logHandler.updateLogTextArea(LogType.CONFIGURATION,"Message => All valid Directories");
 
-            Thread thread = new Thread(calculator);
+            this.finderHandler.attach(new LoadingBarObserver(this.finderHandler));
+
+            Thread thread = new Thread(finderHandler);
             thread.start();
         });
+
+        Button printButton = new Button("Print");
+
+        printButton.setOnAction(event ->
+        {
+            if(!filesLoaded)
+                return;
+
+            ProvincePrinter provincePrinter = new ProvincePrinter(this);
+            provincePrinter.printProvincesToFiles(MapInformationService.getInstance().getProvinceList());
+        });
+
+        HBox buttonHbox = new HBox();
+        buttonHbox.getChildren().addAll(startButton, printButton);
 
         HBox loadingBarHbox = new HBox();
 
@@ -132,21 +163,20 @@ public class Main extends Application
 
             if(selectedDirectory == null)
             {
-                this.calculator.getLogHandler().updateLogTextArea("|Configuration| Message => No Directory Path has been chosen");
+                this.logHandler.updateLogTextArea(LogType.ERROR,"No Input Directory Path has been chosen");
                 return;
             }
 
-            boolean allFilesFound = calculator.getFileHandler().searchForAppropriatedFiles(selectedDirectory.getAbsolutePath());
+            File[] listOfFiles = selectedDirectory.listFiles();
 
-            if(!allFilesFound)
+            if(listOfFiles == null || listOfFiles.length <= 0)
             {
-                directoryInputLabel.setText("Missing Files Needed - View Log");
-                this.calculator.getLogHandler().updateLogTextArea("|Configuration| Message => Missing Files Needed: You need to make sure to include all files needed and with the correct spelling");
+                this.logHandler.updateLogTextArea(LogType.ERROR,"No Files Detected in Input Directory Path");
                 return;
             }
 
             directoryInputLabel.setText(selectedDirectory.getAbsolutePath());
-            calculator.getFileHandler().setInputDirectoryPath(selectedDirectory.getAbsolutePath());
+            fileHandler.setInputDirectoryPath(selectedDirectory.getAbsolutePath());
         });
 
         HBox chooseDirectoryInputHbox = new HBox();
@@ -164,21 +194,12 @@ public class Main extends Application
 
             if(selectedDirectory == null)
             {
-                this.calculator.getLogHandler().updateLogTextArea("|Configuration| Message => No Directory Path has been chosen");
-                return;
-            }
-
-            boolean allFilesFound = calculator.getFileHandler().searchForAppropriatedFiles(selectedDirectory.getAbsolutePath());
-
-            if(!allFilesFound)
-            {
-                directoryOutputLabel.setText("Missing Files Needed - View Log");
-                this.calculator.getLogHandler().updateLogTextArea("|Configuration| Message => Missing Files Needed: You need to make sure to include all files needed and with the correct spelling");
+                this.logHandler.updateLogTextArea(LogType.ERROR,"No Output Directory Path has been chosen");
                 return;
             }
 
             directoryOutputLabel.setText(selectedDirectory.getAbsolutePath());
-            calculator.getFileHandler().setOutputDirectoryPath(selectedDirectory.getAbsolutePath());
+            fileHandler.setOutputDirectoryPath(selectedDirectory.getAbsolutePath());
         });
 
         HBox chooseDirectoryOutputHbox = new HBox();
@@ -196,28 +217,28 @@ public class Main extends Application
 
             if(selectedDirectory == null)
             {
-                this.calculator.getLogHandler().updateLogTextArea("|Configuration| Message => No Directory Path has been chosen");
+                this.logHandler.updateLogTextArea(LogType.ERROR,"No Information Directory Path has been chosen");
                 return;
             }
 
-            boolean allFilesFound = calculator.getFileHandler().searchForAppropriatedFiles(selectedDirectory.getAbsolutePath());
+            boolean allFilesFound = fileHandler.searchForAppropriatedFiles(selectedDirectory.getAbsolutePath());
 
             if(!allFilesFound)
             {
                 directoryInformationLabel.setText("Missing Files Needed - View Log");
-                this.calculator.getLogHandler().updateLogTextArea("|Configuration| Message => Missing Files Needed: You need to make sure to include all files needed and with the correct spelling");
+                this.logHandler.updateLogTextArea(LogType.ERROR,"Missing Files Needed: You need to make sure to include all files needed and with the correct spelling");
                 return;
             }
 
             directoryInformationLabel.setText(selectedDirectory.getAbsolutePath());
-            calculator.getFileHandler().setInformationDirectoryPath(selectedDirectory.getAbsolutePath());
+            fileHandler.setInformationDirectoryPath(selectedDirectory.getAbsolutePath());
         });
 
         HBox chooseDirectoryInformationHbox = new HBox();
 
         chooseDirectoryInformationHbox.getChildren().addAll(chooseDirectoryInformationButton, directoryInformationLabel);
 
-        analyzeCenter.getChildren().addAll(startButton,chooseDirectoryInputHbox, chooseDirectoryOutputHbox, chooseDirectoryInformationHbox, finderLoadingLabel, loadingBarHbox);
+        analyzeCenter.getChildren().addAll(buttonHbox,chooseDirectoryInputHbox, chooseDirectoryOutputHbox, chooseDirectoryInformationHbox, finderLoadingLabel, loadingBarHbox);
         analyzeCenter.setSpacing(25);
         root.setCenter(analyzeCenter);
     }
@@ -280,5 +301,29 @@ public class Main extends Application
 
     public TextArea getLogTextArea() {
         return logTextArea;
+    }
+
+    public boolean isFilesLoaded() {
+        return filesLoaded;
+    }
+
+    public void setFilesLoaded(boolean filesLoaded) {
+        this.filesLoaded = filesLoaded;
+    }
+
+    public FinderHandler getFinderHandler() {
+        return finderHandler;
+    }
+
+    public ProvincePrinter getProvincePrinter() {
+        return provincePrinter;
+    }
+
+    public LogHandler getLogHandler() {
+        return logHandler;
+    }
+
+    public FileHandler getFileHandler() {
+        return fileHandler;
     }
 }

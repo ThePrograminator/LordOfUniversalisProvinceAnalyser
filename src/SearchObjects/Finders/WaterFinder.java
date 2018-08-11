@@ -1,6 +1,5 @@
 package SearchObjects.Finders;
 
-import Model.Map.Climate;
 import Model.Map.MapInformationService;
 import Model.Map.Water;
 
