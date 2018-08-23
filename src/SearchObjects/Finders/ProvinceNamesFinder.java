@@ -1,28 +1,32 @@
 package SearchObjects.Finders;
 
-import Model.ProvinceInformation.Building;
+import Model.Map.Area;
 import Model.Map.MapInformationService;
+import Model.Province;
+import Model.ProvinceInformation.*;
+import SearchObjects.ProvinceKeyWordHandler;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 /**
  * Created by Christian on 14-07-2017.
  */
-public class BuildingFinder implements Finder
+public class ProvinceNamesFinder implements Finder
 {
-    private ArrayList<Building> buildingList = new ArrayList<>();
-    private final String FINDERNAME = "BuildingFinder";
-    private int currentBuildingId = 0;
+    private final String FINDERNAME = "ProvinceNamesFinder";
     private File[] listOfFiles;
+    private ArrayList<ProvinceLangaugeNames> provinceLangaugeNamesList = new ArrayList<>();
 
     @Override
     public boolean loadFiles(String directory)
     {
         try {
-            File folder = new File(directory + "\\" + "buildings");
+            File folder = new File(directory + "\\province_names");
             listOfFiles = folder.listFiles();
         }
         catch (Exception fnfe)
@@ -50,23 +54,25 @@ public class BuildingFinder implements Finder
                     if (line.charAt(0) == '#')
                         continue;
 
-                    if (line.charAt(0) == '}')
-                        continue;
-
-                    if (line.contains("building={"))
+                    if (line.contains("="))
                     {
                         String[] parts = line.split("=");
-                        String part1 = parts[0]; // building name
-                        String part2 = parts[1]; // = {
+                        String part1 = parts[0]; // id
+                        String part2 = parts[1]; // province name
 
-                        String buildingName = part1;
-                        buildingName = buildingName.replaceAll("\\s+","");
+                        String id = part1;
+                        id = id.replaceAll("\\s+","");
 
-                        Building building = new Building(currentBuildingId);
-                        building.setBuildingName(buildingName);
+                        String provinceName = part2.trim();
+                        provinceName = provinceName.replaceAll("\"+", "");
 
-                        this.buildingList.add(building);
-                        currentBuildingId++;
+                        ProvinceLangaugeNames provinceLangaugeNames = new ProvinceLangaugeNames();
+
+                        provinceLangaugeNames.setId(Integer.parseInt(id));
+                        provinceLangaugeNames.setValue(provinceName);
+                        provinceLangaugeNames.setLangauge(file.getName());
+
+                        this.provinceLangaugeNamesList.add(provinceLangaugeNames);
                     }
                 }
                 scanner.close();
@@ -77,12 +83,7 @@ public class BuildingFinder implements Finder
             }
         }
 
-        for(Building building : this.buildingList)
-        {
-            System.out.println("id: " + building.getBuildingName());
-        }
-
-        MapInformationService.getInstance().setBuildingList(this.buildingList);
+        MapInformationService.getInstance().setProvinceLangaugeNames(this.provinceLangaugeNamesList);
 
         return true;
     }

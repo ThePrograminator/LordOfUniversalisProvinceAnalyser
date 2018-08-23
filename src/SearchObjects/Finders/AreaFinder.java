@@ -60,8 +60,10 @@ public class AreaFinder implements Finder
 
                     addToAreaMap(area, provinceIDLine);
                     this.areaList.add(area);
+                    currentAreaId++;
                 }
             }
+            scanner.close();
         }
         catch (FileNotFoundException fnfe)
         {

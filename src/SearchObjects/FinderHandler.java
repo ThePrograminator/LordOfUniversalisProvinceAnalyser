@@ -34,6 +34,7 @@ public class FinderHandler implements Runnable
         this.finderList.add(new WaterFinder());
         this.finderList.add(new BuildingFinder());
         this.finderList.add(new LocalisationFinder());
+        this.finderList.add(new ProvinceNamesFinder());
     }
 
     public void startCalculator()

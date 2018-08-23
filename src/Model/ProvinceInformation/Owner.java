@@ -38,10 +38,21 @@ public class Owner
 
     @Override
     public String toString() {
-        return "Owner{" +
-                "core='" + core + '\'' +
-                ", owner='" + owner + '\'' +
-                ", controller='" + controller + '\'' +
-                '}';
+        String toString;
+        toString = "add_core = " +  core.get(0) + "\n";
+        toString += "owner = " +  owner + "\n";
+        toString += "controller = " +  controller + "\n" + "\n";
+
+        boolean firstTime = true;
+
+        for (String coreString : core)
+        {
+            if (firstTime)
+                firstTime = false;
+            else
+                toString += "add_core = " +  coreString + "\n";
+        }
+
+        return  toString;
     }
 }

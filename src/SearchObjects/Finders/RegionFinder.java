@@ -80,6 +80,7 @@ public class RegionFinder implements Finder
                             if(area.getKeyName().equals(areaLine))
                             {
                                 region.getAreaList().add(area);
+                                area.setRegion(region);
                                 break;
                             }
                         }
@@ -89,6 +90,7 @@ public class RegionFinder implements Finder
                     currentRegionId++;
                 }
             }
+            scanner.close();
         }
         catch (FileNotFoundException fnfe)
         {

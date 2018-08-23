@@ -23,7 +23,10 @@ public class HistoryEvent
 
     public void addContents(String contents)
     {
-        this.contents += contents + "\n";
+        if (this.contents != null)
+            this.contents += "\t" + contents + "\n";
+        else
+            this.contents = "\t" + contents + "\n";
     }
 
     @Override
@@ -31,7 +34,7 @@ public class HistoryEvent
     {
         String toString;
         toString = date + " = {" + "\n";
-        toString += contents + "\n";
+        toString += contents;
         toString += "}" + "\n" + "\n";
 
         return  toString;

@@ -76,6 +76,7 @@ public class ContinentFinder implements Finder
                     currentContinentId++;
                 }
             }
+            scanner.close();
         }
         catch(FileNotFoundException fnfe)
         {

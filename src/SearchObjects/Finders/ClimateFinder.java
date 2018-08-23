@@ -59,6 +59,11 @@ public class ClimateFinder implements Finder
                     Climate climate = new Climate(currentClimateId);
                     climate.setKeyName(climateName);
 
+                    String firstLetter = climateName.substring(0,1).toUpperCase();
+                    String restLetters = climateName.substring(1).toLowerCase();
+
+                    climate.setValueName(firstLetter + restLetters);
+
                     while (scanner.hasNextLine())
                     {
                         String provinceIDLine = scanner.nextLine();
@@ -81,6 +86,7 @@ public class ClimateFinder implements Finder
                     currentClimateId++;
                 }
             }
+            scanner.close();
         }
         catch(FileNotFoundException fnfe)
         {

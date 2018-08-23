@@ -13,22 +13,11 @@ public class LogHandler
         this.main = main;
     }
 
-    /*public synchronized void updateLogTextArea(String message)
-    {
-        Platform.runLater(() ->
-        {
-            TextArea textArea =  main.getLogTextArea();
-            textArea.setText(textArea.getText() + message + "\n");
-            textArea.selectPositionCaret( textArea.getLength());
-            textArea.deselect();
-        });
-    }*/
-
     public synchronized void updateLogTextArea(LogType logType, String message)
     {
         String logtypeSTR = logType.name();
-        logtypeSTR = logtypeSTR.substring(0,1).toUpperCase();
-        logtypeSTR = logtypeSTR.substring(1).toLowerCase();
+        String capLetter = logtypeSTR.substring(0,1).toUpperCase();
+        logtypeSTR = capLetter + logtypeSTR.substring(1).toLowerCase();
         String result = "|" + logtypeSTR + "| Message => " + message;
 
         Platform.runLater(() ->

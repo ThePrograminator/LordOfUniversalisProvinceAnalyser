@@ -76,6 +76,7 @@ public class ProvinceFinder implements Finder
                 }
 
                 provinceList.add(currentProvince);
+                scanner.close();
             }
             catch (FileNotFoundException fnfe)
             {
@@ -364,7 +365,7 @@ public class ProvinceFinder implements Finder
 
             currentProvince.getBuildings().add(building);
         }
-        else  if (line.matches(".{2}"))
+        else  if (line.matches(".*\\..*\\..*"))
         {
             if (currentProvince.getHistoryEvents() == null)
                 currentProvince.setHistoryEvents(new ArrayList<>());
@@ -376,10 +377,12 @@ public class ProvinceFinder implements Finder
             HistoryEvent historyEvent = new HistoryEvent();
             historyEvent.setDate(part1);
 
+            boolean foundModifier = false;
+
             while (scanner.hasNextLine())
             {
                 String nextLine = scanner.nextLine();
-                nextLine = nextLine.replaceAll("\\s+", "");
+                nextLine = nextLine.trim();
 
                 if (nextLine.isEmpty())
                     continue;
@@ -387,10 +390,27 @@ public class ProvinceFinder implements Finder
                 if (nextLine.charAt(0) == '#')
                     continue;
 
-                if (nextLine.charAt(0) == '}')
-                    break;
+                if (nextLine.contains(provinceKeyWordHandler.getAddProvinceModifier()) || nextLine.contains(provinceKeyWordHandler.getAddPermanentProvinceModifier()))
+                {
+                    foundModifier = true;
+                    historyEvent.addContents(nextLine);
+                    continue;
+                }
 
-                historyEvent.addContents(nextLine);
+                if (nextLine.charAt(0) == '}' && !foundModifier)
+                    break;
+                else if (nextLine.charAt(0) == '}' && foundModifier)
+                    foundModifier = false;
+
+                if (!foundModifier)
+                {
+                    historyEvent.addContents(nextLine);
+                }
+                else
+                {
+                    nextLine = "\t" +  nextLine;
+                    historyEvent.addContents(nextLine);
+                }
             }
 
             currentProvince.getHistoryEvents().add(historyEvent);

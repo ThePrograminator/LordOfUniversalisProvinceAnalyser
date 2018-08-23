@@ -101,6 +101,7 @@ public class WaterFinder implements Finder
                     currentWaterId++;
                 }
             }
+            scanner.close();
         }
         catch(FileNotFoundException fnfe)
         {

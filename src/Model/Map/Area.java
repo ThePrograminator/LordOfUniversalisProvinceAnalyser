@@ -8,6 +8,7 @@ public class Area
     private ArrayList<Integer> provinceList;
     private String keyName;
     private String valueName;
+    private Region region;
 
     public Area(int id)
     {
@@ -47,6 +48,14 @@ public class Area
         this.valueName = valueName;
     }
 
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
+
     @Override
     public boolean equals(Object obj)
     {
@@ -54,5 +63,22 @@ public class Area
             return true;
         else
             return false;
+    }
+
+    @Override
+    public String toString()
+    {
+        String toString;
+        toString = getKeyName() + " = {" + "\n";
+        toString += "\t";
+
+        for (Integer integer : getProvinceList())
+        {
+            toString += integer + " ";
+        }
+        toString += "\n";
+        toString += "}" + "\n" + "\n";
+
+        return  toString;
     }
 }

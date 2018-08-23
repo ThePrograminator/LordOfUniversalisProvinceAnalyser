@@ -78,6 +78,7 @@ public class SuperRegionFinder implements Finder
                             if(region.getKeyName().equals(regionLine))
                             {
                                 superRegion.getRegionList().add(region);
+                                region.setSuperRegion(superRegion);
                                 break;
                             }
                         }
@@ -87,6 +88,7 @@ public class SuperRegionFinder implements Finder
                     currentSuperRegionId++;
                 }
             }
+            scanner.close();
         }
         catch (FileNotFoundException fnfe)
         {

@@ -1,7 +1,9 @@
 package Model.Map;
 
+import Model.Localisation.Localisation;
 import Model.Province;
 import Model.ProvinceInformation.Building;
+import Model.ProvinceInformation.ProvinceLangaugeNames;
 import Model.RGB;
 
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ public class MapInformationService {
     private ArrayList<Water> waterProvinceList;
     private ArrayList<Building> buildingList;
     private ArrayList<Province> provinceList;
+    private ArrayList<ProvinceLangaugeNames> provinceLangaugeNames;
 
     private MapInformationService()
     {
@@ -36,6 +39,7 @@ public class MapInformationService {
         waterProvinceList = new ArrayList<>();
         buildingList = new ArrayList<>();
         provinceList = new ArrayList<>();
+        provinceLangaugeNames = new ArrayList<>();
     }
 
     public ArrayList<RGB> getRgbList() {
@@ -83,7 +87,7 @@ public class MapInformationService {
     }
 
     public void setClimateList(ArrayList<Climate> climateList) {
-        climateList = climateList;
+        this.climateList = climateList;
     }
 
     public ArrayList<TradeNode> getTradeNodeList() {
@@ -116,6 +120,14 @@ public class MapInformationService {
 
     public void setProvinceList(ArrayList<Province> provinceList) {
         this.provinceList = provinceList;
+    }
+
+    public ArrayList<ProvinceLangaugeNames> getProvinceLangaugeNames() {
+        return provinceLangaugeNames;
+    }
+
+    public void setProvinceLangaugeNames(ArrayList<ProvinceLangaugeNames> provinceLangaugeNames) {
+        this.provinceLangaugeNames = provinceLangaugeNames;
     }
 
     public void transferProvinceList(ArrayList<Province> provinceList) {
@@ -211,7 +223,15 @@ public class MapInformationService {
                 }
             }
 
-            int stop = 0;
+            for (ProvinceLangaugeNames provinceLangaugeNames : this.provinceLangaugeNames)
+            {
+                if (provinceLangaugeNames.getId() == province.getID())
+                {
+                    province.getProvinceName().getProvinceLangaugeNamesList().add(provinceLangaugeNames);
+                }
+            }
         }
+
+        LocalisationService.getInstance().transferProvinceList();
     }
 }

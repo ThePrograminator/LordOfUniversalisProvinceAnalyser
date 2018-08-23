@@ -8,6 +8,7 @@ public class Region
     private ArrayList<Area> areaList;
     private String keyName;
     private String valueName;
+    private SuperRegion superRegion;
 
     public Region(int id)
     {
@@ -45,5 +46,13 @@ public class Region
 
     public void setValueName(String valueName) {
         this.valueName = valueName;
+    }
+
+    public SuperRegion getSuperRegion() {
+        return superRegion;
+    }
+
+    public void setSuperRegion(SuperRegion superRegion) {
+        this.superRegion = superRegion;
     }
 }

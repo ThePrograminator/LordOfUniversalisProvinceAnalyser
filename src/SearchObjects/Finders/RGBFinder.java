@@ -42,6 +42,7 @@ public class RGBFinder implements Finder
 
                 scanLine(line);
             }
+            fileScanner.close();
         }
         catch (FileNotFoundException fnfe)
         {

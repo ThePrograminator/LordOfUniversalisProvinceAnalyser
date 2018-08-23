@@ -82,6 +82,7 @@ public class TradeNodeFinder implements Finder
                     currentTradeNodeId++;
                 }
             }
+            scanner.close();
         }
         catch(FileNotFoundException fnfe)
         {

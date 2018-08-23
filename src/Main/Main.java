@@ -2,11 +2,12 @@ package Main;
 
 import Main.View.LogHandler;
 import Main.View.LogType;
-import Main.View.Observer;
 import Model.Map.MapInformationService;
+import Model.Province;
+import Query.QueryHandler;
 import SearchObjects.FinderHandler;
 import Main.View.LoadingBarObserver;
-import SearchObjects.ProvincePrinter;
+import SearchObjects.Printers.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -18,6 +19,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class Main extends Application
 {
@@ -32,18 +34,24 @@ public class Main extends Application
     private BorderPane root;
     private Scene scene;
     private VBox analyzeCenter;
+    private VBox fileCenter;
     private boolean filesLoaded;
 
+    private TextField getQueryTextField;
+    private TextField editQueryTextField;
+    private Label getQueryResultLabel;
+
+    private LogHandler logHandler = new LogHandler(this);
     private FileHandler fileHandler = new FileHandler(this);
     private FinderHandler finderHandler = new FinderHandler(this);
     private ProvincePrinter provincePrinter = new ProvincePrinter(this);
-    private LogHandler logHandler = new LogHandler(this);
 
+    private ArrayList<Province> resultProvinces = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage)
     {
-        root = new BorderPane();
+        this.root = new BorderPane();
 
         primaryStage.setMinWidth(750);
         primaryStage.setMinHeight(750);
@@ -52,12 +60,14 @@ public class Main extends Application
 
         createBottomLayout(primaryStage);
         createTopLayout(primaryStage);
-        createCenterLayout(primaryStage);
+        createAnalyzeCenterLayout(primaryStage);
+        createFileCenterLayout(primaryStage);
 
-        scene = new Scene(root, 750, 750);
+        this.scene = new Scene(root, 750, 750);
 
+        this.fileHandler.loadConfiguration();
         primaryStage.setTitle("Lord of Universalis - Create ProvinceInformation Information");
-        primaryStage.setScene(scene);
+        primaryStage.setScene(this.scene);
         primaryStage.setOnCloseRequest(e -> Platform.exit());
         primaryStage.show();
     }
@@ -72,10 +82,7 @@ public class Main extends Application
         MenuItem province = new MenuItem("ProvinceInformation");
         province.setOnAction(event ->
         {
-            Label label = new Label("Hello World");
-            VBox vBox = new VBox();
-            vBox.getChildren().addAll(label);
-            root.setCenter(vBox);
+            root.setCenter(fileCenter);
         });
         menuFile.getItems().add(province);
 
@@ -84,7 +91,6 @@ public class Main extends Application
         MenuItem analyze = new MenuItem("Analyze");
         analyze.setOnAction(event ->
         {
-            System.out.println("hello world");
             root.setCenter(analyzeCenter);
         });
         menuEdit.getItems().add(analyze);
@@ -97,7 +103,7 @@ public class Main extends Application
         root.setTop(menuBar);
     }
 
-    public void createCenterLayout(Stage primaryStage)
+    public void createAnalyzeCenterLayout(Stage primaryStage)
     {
         analyzeCenter = new VBox();
 
@@ -128,6 +134,8 @@ public class Main extends Application
 
             this.finderHandler.attach(new LoadingBarObserver(this.finderHandler));
 
+            this.fileHandler.printConfiguration();
+
             Thread thread = new Thread(finderHandler);
             thread.start();
         });
@@ -140,11 +148,30 @@ public class Main extends Application
                 return;
 
             ProvincePrinter provincePrinter = new ProvincePrinter(this);
+            provincePrinter.printProvincesToFiles(getResultProvinces());
+        });
+
+        Button printAllButton = new Button("Print All");
+
+        printAllButton.setOnAction(event ->
+        {
+            if(!filesLoaded)
+                return;
+
+            ProvincePrinter provincePrinter = new ProvincePrinter(this);
             provincePrinter.printProvincesToFiles(MapInformationService.getInstance().getProvinceList());
+            AreaPrinter areaPrinter = new AreaPrinter(this);
+            areaPrinter.printAreasToFiles();
+            DefinitionPrinter definitionPrinter = new DefinitionPrinter(this);
+            definitionPrinter.printDefinitionToFiles();
+            ProvinceLocalisationPrinter localisationPrinter = new ProvinceLocalisationPrinter(this);
+            localisationPrinter.printProvinceLocalisationToFiles();
+            ProvinceNamesPrinter provinceNamesPrinter = new ProvinceNamesPrinter(this);
+            provinceNamesPrinter.printNamesToFiles();
         });
 
         HBox buttonHbox = new HBox();
-        buttonHbox.getChildren().addAll(startButton, printButton);
+        buttonHbox.getChildren().addAll(startButton, printButton, printAllButton);
 
         HBox loadingBarHbox = new HBox();
 
@@ -243,6 +270,51 @@ public class Main extends Application
         root.setCenter(analyzeCenter);
     }
 
+    public void createFileCenterLayout(Stage primaryStage)
+    {
+        fileCenter = new VBox();
+
+        Button startButton = new Button("Start");
+        startButton.setOnAction(event ->
+        {
+            QueryHandler queryHandler = new QueryHandler(this);
+            queryHandler.doQuery(getQueryTextField.getText(), editQueryTextField.getText());
+        });
+
+        Label getQueryLabel = new Label("Get Query: ");
+
+        getQueryTextField = new TextField();
+        getQueryTextField.setPromptText("Write a get query: ");
+        getQueryTextField.setMinWidth(550);
+
+        getQueryResultLabel = new Label("Result: ");
+
+        HBox getQueryBox = new HBox();
+        getQueryBox.setSpacing(15);
+        getQueryBox.getChildren().addAll(getQueryLabel, getQueryTextField, getQueryResultLabel);
+
+        Label editQueryLabel = new Label("Edit Query: ");
+
+        editQueryTextField = new TextField();
+        editQueryTextField.setPromptText("Write an edit query: ");
+        editQueryTextField.setMinWidth(550);
+
+        HBox editQueryBox = new HBox();
+        editQueryBox.setSpacing(15);
+        editQueryBox.getChildren().addAll(editQueryLabel, editQueryTextField);
+
+        Button create = new Button("Create Standard");
+        create.setOnAction(event ->
+        {
+            CreateProvincePrinter createProvincePrinter = new CreateProvincePrinter(this);
+            createProvincePrinter.printProvincesToFiles();
+        });
+
+        fileCenter.getChildren().addAll(getQueryBox, editQueryBox, startButton, create);
+        fileCenter.setSpacing(25);
+        root.setCenter(fileCenter);
+    }
+
     public void createBottomLayout(Stage primaryStage)
     {
         logTextArea = new TextArea();
@@ -325,5 +397,29 @@ public class Main extends Application
 
     public FileHandler getFileHandler() {
         return fileHandler;
+    }
+
+    public Label getGetQueryResultLabel() {
+        return getQueryResultLabel;
+    }
+
+    public Label getDirectoryInputLabel() {
+        return directoryInputLabel;
+    }
+
+    public Label getDirectoryOutputLabel() {
+        return directoryOutputLabel;
+    }
+
+    public Label getDirectoryInformationLabel() {
+        return directoryInformationLabel;
+    }
+
+    public ArrayList<Province> getResultProvinces() {
+        return resultProvinces;
+    }
+
+    public void setResultProvinces(ArrayList<Province> resultProvinces) {
+        this.resultProvinces = resultProvinces;
     }
 }
